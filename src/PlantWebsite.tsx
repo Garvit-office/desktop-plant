@@ -1,94 +1,143 @@
-import React, { useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 
-// Sample data for your plant catalog
-const plantsCatalog = [
+type PlantType = 'vine' | 'blossom' | 'sunflower';
+
+type Plant = {
+  id: string;
+  name: string;
+  description: string;
+  downloads: number;
+  type: PlantType;
+  installerUrl: string;
+  color: string;
+  tag: string;
+};
+
+const plantsCatalog: Plant[] = [
   {
-    id: 'hanging-ivy-01',
-    name: 'Hanging Ivy',
-    description: 'A cozy green vine that drapes gracefully over your top screen border.',
-    downloads: 1240,
-    image: 'https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif',
+    id: 'neon-pothos',
+    name: 'Cascading Neon Pothos',
+    description: 'A bright, trailing vine that makes your screen feel a little more alive.',
+    downloads: 1420,
+    type: 'vine',
+    installerUrl: 'https://github.com/Garvit-office/desktop-plant/releases/download/v1.0.0/neon-pothos_setup.exe',
+    color: '#b6e36d',
+    tag: 'Most adopted'
   },
   {
-    id: 'sunflower-02',
-    name: 'Bouncing Sunflower',
-    description: 'Brightens up your bottom taskbar with a cheerful little sway.',
-    downloads: 850,
-    image: 'https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif', // Replace with unique plant GIF
+    id: 'sakura-blossom',
+    name: 'Sakura Cherry Blossom',
+    description: 'Delicate pink blossoms with a slow, calming sway for focused afternoons.',
+    downloads: 980,
+    type: 'blossom',
+    installerUrl: 'https://github.com/Garvit-office/desktop-plant/releases/download/v1.0.0/sakura_setup.exe',
+    color: '#f4a9ba',
+    tag: 'New arrival'
   },
   {
-    id: 'bonsai-03',
-    name: 'Minimalist Bonsai',
-    description: 'A calm, peaceful desktop companion that sits quietly in your corner.',
-    downloads: 2100,
-    image: 'https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif', // Replace with unique plant GIF
+    id: 'sunshine-sunflower',
+    name: 'Sunshine Sunflower',
+    description: 'A sunny desktop companion that turns toward your active window.',
+    downloads: 2310,
+    type: 'sunflower',
+    installerUrl: 'https://github.com/Garvit-office/desktop-plant/releases/download/v1.0.0/sunflower_setup.exe',
+    color: '#f5c451',
+    tag: 'Community favorite'
   }
 ];
 
+const apiBase = import.meta.env.VITE_API_URL || '';
+
+function PlantArtwork({ type }: { type: PlantType }) {
+  return <div className={`plant-art plant-art--${type}`} aria-hidden="true">
+    <span className="art-pot" />
+    <span className="art-stem art-stem--one" />
+    <span className="art-stem art-stem--two" />
+    <span className="art-leaf art-leaf--one" />
+    <span className="art-leaf art-leaf--two" />
+    <span className="art-leaf art-leaf--three" />
+    <span className="art-flower">{type === 'blossom' ? '✿' : type === 'sunflower' ? '✺' : '✦'}</span>
+  </div>;
+}
+
 export default function PlantWebsite() {
+  const [plants, setPlants] = useState(plantsCatalog);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
-  const handleDownload = (plantId: string, plantName: string) => {
-    setDownloadingId(plantId);
-    
-    // Simulate triggering the installer download
-    setTimeout(() => {
-      alert(`Your download for "${plantName}" has started! Run the installer to stick it to your screen border.`);
-      setDownloadingId(null);
-    }, 1500);
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const response = await fetch(`${apiBase}/api/stats`);
+        if (!response.ok) return;
+        const stats: Record<string, { downloads: number }> = await response.json();
+        setPlants((currentPlants) => currentPlants.map((plant) => ({
+          ...plant,
+          downloads: stats[plant.id]?.downloads ?? plant.downloads
+        })));
+      } catch {
+        // The catalog remains usable offline with its latest known counts.
+      }
+    };
+    void loadStats();
+  }, []);
 
-    // Optional: Send analytics to your backend logging that a user clicked download
-    /*
-    fetch('https://your-plant-website-backend.com/api/log-click', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plantId })
-    });
-    */
+  const handleDownload = async (plantId: string, installerUrl: string) => {
+    setDownloadingId(plantId);
+
+    try {
+      await fetch(`${apiBase}/api/track-download`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plantId, timestamp: new Date().toISOString() })
+      });
+    } catch {
+      // Downloading remains available when analytics is offline.
+    }
+
+    setPlants((currentPlants) => currentPlants.map((plant) => plant.id === plantId
+      ? { ...plant, downloads: plant.downloads + 1 }
+      : plant));
+    window.location.assign(installerUrl);
+    setDownloadingId(null);
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f4f7f4', fontFamily: 'Arial, sans-serif', padding: '40px 20px' }}>
-      {/* Header Section */}
-      <header style={{ textAlign: 'center', marginBottom: '50px' }}>
-        <h1 style={{ fontSize: '2.5rem', color: '#2c4a3e', marginBottom: '10px' }}>🌿 Desktop Greenery</h1>
-        <p style={{ fontSize: '1.1rem', color: '#666' }}>Bring your screen to life. Download animated plants that stick to your desktop borders.</p>
+    <main className="marketplace-shell">
+      <div className="top-rule" />
+      <header className="site-header">
+        <div className="brand-lockup"><span className="brand-mark">✦</span><span>DESKTOP GREENERY</span></div>
+        <span className="availability"><span className="status-dot" /> Free for Windows & macOS</span>
       </header>
 
-      {/* Plant Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', maxWidth: '1000px', margin: '0 auto' }}>
-        {plantsCatalog.map((plant) => (
-          <div key={plant.id} style={{ background: '#white', borderRadius: '16px', padding: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', textAlign: 'center', border: '1px solid #e2e8e2' }}>
-            <div style={{ height: '140px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '15px' }}>
-              <img src={plant.image} alt={plant.name} style={{ maxHeight: '120px', objectFit: 'contain' }} />
+      <section className="hero">
+        <div className="hero-copy">
+          <p className="eyebrow">A little life for your workspace</p>
+          <h1>Plants that live<br /><em>on your screen.</em></h1>
+          <p className="hero-subtitle">Ultra-realistic desktop companions that grow from your top border, sway with the breeze, and make everyday work feel more human.</p>
+          <div className="hero-meta"><span>↓ 4,710 adopted</span><span className="meta-divider" /><span>✦ Updated weekly</span></div>
+        </div>
+        <div className="hero-window" aria-hidden="true">
+          <div className="window-bar"><span /><span /><span /><b>desktop / greenery</b></div>
+          <div className="window-scene"><div className="hero-vine" /><div className="hero-window-copy">make space<br /><i>for something<br />growing.</i></div></div>
+        </div>
+      </section>
+
+      <section className="catalog-section">
+        <div className="section-heading"><div><p className="eyebrow">The collection</p><h2>Choose your companion</h2></div><span className="catalog-count">03 plants available</span></div>
+        <div className="plant-grid">
+        {plants.map((plant) => (
+          <article className="plant-card" key={plant.id}>
+            <div className="card-art" style={{ '--plant-accent': plant.color } as CSSProperties}>
+              <span className="card-tag">{plant.tag}</span><PlantArtwork type={plant.type} />
             </div>
-            
-            <h3 style={{ fontSize: '1.3rem', color: '#2c4a3e', marginBottom: '8px' }}>{plant.name}</h3>
-            <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '20px', minHeight: '40px' }}>{plant.description}</p>
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #eee', paddingTop: '15px' }}>
-              <span style={{ fontSize: '0.85rem', color: '#888' }}>📥 {plant.downloads} adoptions</span>
-              
-              <button 
-                onClick={() => handleDownload(plant.id, plant.name)}
-                disabled={downloadingId === plant.id}
-                style={{
-                  backgroundColor: downloadingId === plant.id ? '#94b4a3' : '#2c4a3e',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  transition: 'background 0.2s'
-                }}
-              >
-                {downloadingId === plant.id ? 'Preparing...' : 'Download Plant'}
-              </button>
+            <div className="card-content"><p className="plant-kind">{plant.type === 'vine' ? 'Trailing plant' : plant.type === 'blossom' ? 'Flowering branch' : 'Flowering plant'}</p><h3>{plant.name}</h3><p className="plant-description">{plant.description}</p>
+              <div className="card-footer"><span className="adoptions">↓ {plant.downloads.toLocaleString()} <small>adoptions</small></span><button onClick={() => void handleDownload(plant.id, plant.installerUrl)} disabled={downloadingId === plant.id}>{downloadingId === plant.id ? 'Downloading...' : 'Adopt plant <'}</button></div>
             </div>
-          </div>
+          </article>
         ))}
-      </div>
-    </div>
+        </div>
+      </section>
+      <footer className="site-footer"><span>Desktop Greenery <b>·</b> made for slower screens</span><span>v1.0.0 <b>·</b> Open source</span></footer>
+    </main>
   );
 }

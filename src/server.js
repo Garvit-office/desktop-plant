@@ -1,5 +1,5 @@
-const express = require('express');
-const cors = require('cors');
+import cors from 'cors';
+import express from 'express';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -8,9 +8,9 @@ app.use(express.json());
 
 // In-memory database simulation (replace with MongoDB or PostgreSQL later)
 let plantStats = {
-  'hanging-ivy-01': { downloads: 1240 },
-  'sunflower-02': { downloads: 850 },
-  'bonsai-03': { downloads: 2100 }
+  'neon-pothos': { downloads: 1420 },
+  'sakura-blossom': { downloads: 980 },
+  'sunshine-sunflower': { downloads: 2310 }
 };
 
 // Endpoint to track a download/adoption
