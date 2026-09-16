@@ -1,10 +1,30 @@
 import cors from 'cors';
 import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 const app = express();
 const PORT = process.env.PORT || 5000;
+const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+const installerPath = process.env.INSTALLER_PATH || path.resolve(
+  currentDirectory,
+  '../src-tauri/target/release/bundle/nsis/desktop-plant_0.1.0_x64-setup.exe'
+);
 
 app.use(cors());
 app.use(express.json());
+
+app.get('/downloads/desktop-plant_0.1.0_x64-setup.exe', (_req, res) => {
+  res.download(installerPath, 'desktop-plant_0.1.0_x64-setup.exe', (error) => {
+    if (error && !res.headersSent) {
+      res.status(error.code === 'ENOENT' ? 404 : 500).json({
+        success: false,
+        message: error.code === 'ENOENT'
+          ? 'Installer is not available on this server yet.'
+          : 'Installer download failed.'
+      });
+    }
+  });
+});
 
 // In-memory database simulation (replace with MongoDB or PostgreSQL later)
 let plantStats = {

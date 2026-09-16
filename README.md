@@ -1,6 +1,21 @@
-# Tauri + React + Typescript
+# Desktop Greenery
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+The marketplace runs on Vite and the adoption API runs on Express.
+
+## Run locally
+
+```sh
+npm run server
+npm run dev
+```
+
+Build the Windows installer with `npm run tauri build`. The marketplace download
+route serves the generated file from `src-tauri/target/release/bundle/nsis`.
+
+For a deployed frontend, set `VITE_API_URL` to the public API origin. You can
+also set `VITE_INSTALLER_URL` to the public URL of the uploaded `.exe` asset.
+The installer must be uploaded with the exact generated name:
+`desktop-plant_0.1.0_x64-setup.exe`.
 
 ## Recommended IDE Setup
 

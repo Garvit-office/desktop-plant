@@ -14,6 +14,10 @@ type Plant = {
   tag: string;
 };
 
+const apiBase = import.meta.env.VITE_API_URL || '';
+const installerUrl = import.meta.env.VITE_INSTALLER_URL
+  || `${apiBase}/downloads/desktop-plant_0.1.0_x64-setup.exe`;
+
 const plantsCatalog: Plant[] = [
   {
     id: 'neon-pothos',
@@ -21,7 +25,7 @@ const plantsCatalog: Plant[] = [
     description: 'A bright, trailing vine that makes your screen feel a little more alive.',
     downloads: 1420,
     type: 'vine',
-    installerUrl: 'https://github.com/Garvit-office/desktop-plant/releases/download/v1.0.0/neon-pothos_setup.exe',
+    installerUrl,
     color: '#b6e36d',
     tag: 'Most adopted'
   },
@@ -31,7 +35,7 @@ const plantsCatalog: Plant[] = [
     description: 'Delicate climbing roses with a slow, calming sway for focused afternoons.',
     downloads: 980,
     type: 'blossom',
-    installerUrl: 'https://github.com/Garvit-office/desktop-plant/releases/download/v1.0.0/sakura_setup.exe',
+    installerUrl,
     color: '#f4a9ba',
     tag: 'New arrival'
   },
@@ -41,13 +45,11 @@ const plantsCatalog: Plant[] = [
     description: 'A sunny desktop companion that turns toward your active window.',
     downloads: 2310,
     type: 'sunflower',
-    installerUrl: 'https://github.com/Garvit-office/desktop-plant/releases/download/v1.0.0/sunflower_setup.exe',
+    installerUrl,
     color: '#f5c451',
     tag: 'Community favorite'
   }
 ];
-
-const apiBase = import.meta.env.VITE_API_URL || '';
 
 function PlantArtwork({ type }: { type: PlantType }) {
   return (
