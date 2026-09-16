@@ -1,0 +1,152 @@
+import { useEffect } from 'react';
+import './App.css';
+
+function App() {
+  useEffect(() => {
+    async function trackCompanion() {
+      try {
+        await fetch('http://localhost:5000/api/track-download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plantId: 'hyper-realistic-vine',
+            timestamp: new Date().toISOString()
+          })
+        });
+      } catch (e) {
+        console.log("Companion active locally.");
+      }
+    }
+    trackCompanion();
+  }, []);
+
+  return (
+    <main data-tauri-drag-region className="screen-overlay-root">
+      <div className="vine-container">
+        <svg className="realistic-vine-svg" viewBox="0 0 200 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Subtle Back Vine Shadows for Depth */}
+          <path d="M150 10C140 80 170 160 120 230C80 290 140 320 110 360" stroke="#0f2219" strokeWidth="6" strokeLinecap="round" opacity="0.3" />
+
+          {/* Primary Main Stem */}
+          <path d="M148 5C138 75 168 155 118 225C78 285 138 315 108 355" stroke="url(#stemGrad)" strokeWidth="4.5" strokeLinecap="round" />
+          
+          {/* Secondary Interlacing Tendrils */}
+          <path d="M132 80C105 105 75 120 45 145" stroke="url(#stemGrad)" strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M125 155C100 185 85 200 55 225" stroke="url(#stemGrad)" strokeWidth="2" strokeLinecap="round" />
+          <path d="M108 260C85 285 75 295 50 320" stroke="url(#stemGrad)" strokeWidth="1.5" strokeLinecap="round" />
+
+          {/* Detailed Photorealistic Leaf Nodes (Left & Right Variations) */}
+          <g className="leaf-group">
+            {/* Top Cluster Leaves */}
+            <path d="M130 35C105 20 95 45 115 65C130 70 140 50 130 35Z" fill="url(#leafGradLight)" stroke="#1f4e1f" strokeWidth="0.75" />
+            <path d="M145 95C175 90 185 120 155 130C135 130 130 110 145 95Z" fill="url(#leafGradDark)" stroke="#153615" strokeWidth="0.75" />
+            
+            {/* Mid Branching Leaves */}
+            <path d="M90 125C65 110 50 135 75 155C95 165 105 140 90 125Z" fill="url(#leafGradLight)" stroke="#1f4e1f" strokeWidth="0.75" />
+            <path d="M48 148C20 155 15 185 45 190C60 190 65 165 48 148Z" fill="url(#leafGradDark)" stroke="#153615" strokeWidth="0.75" />
+
+            {/* Lower Trailing Cluster */}
+            <path d="M115 210C80 215 75 250 105 255C125 255 135 230 115 210Z" fill="url(#leafGradLight)" stroke="#1f4e1f" strokeWidth="0.75" />
+            <path d="M70 235C40 245 45 280 75 275C90 270 90 250 70 235Z" fill="url(#leafGradDark)" stroke="#153615" strokeWidth="0.75" />
+            <path d="M52 315C25 320 30 350 55 345C70 340 70 325 52 315Z" fill="url(#leafGradLight)" stroke="#1f4e1f" strokeWidth="0.75" />
+          </g>
+
+          {/* Delicate Realistic Cherry Blossom / Botanical Flower Clusters */}
+          <g className="bloom-cluster">
+            {/* Flower 1 */}
+            <circle cx="35" cy="172" r="9" fill="url(#petalGrad)" />
+            <circle cx="33" cy="170" r="3.5" fill="#ffffff" />
+            <circle cx="33" cy="170" r="1.5" fill="#e06d8a" />
+
+            {/* Flower 2 */}
+            <circle cx="68" cy="272" r="11" fill="url(#petalGrad)" />
+            <circle cx="66" cy="270" r="4" fill="#ffffff" />
+            <circle cx="66" cy="270" r="2" fill="#d95a7c" />
+          </g>
+
+          {/* Professional Shading & Light Gradients */}
+          <defs>
+            <linearGradient id="stemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#315c3a" />
+              <stop offset="100%" stopColor="#183620" />
+            </linearGradient>
+
+            <linearGradient id="leafGradLight" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#8ecae6" stopOpacity="0.1" />
+              <stop offset="25%" stopColor="#9bcd53" />
+              <stop offset="100%" stopColor="#2a6f37" />
+            </linearGradient>
+
+            <linearGradient id="leafGradDark" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#609c3c" />
+              <stop offset="100%" stopColor="#14361b" />
+            </linearGradient>
+
+            <radialGradient id="petalGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#ffb3c6" />
+              <stop offset="70%" stopColor="#f48fb1" />
+              <stop offset="100%" stopColor="#c56d87" />
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+    </main>
+  );
+}
+
+export default App;            /* Ensure absolute background transparency for the Tauri desktop window */
+body, html, #root {
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+.screen-overlay-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  pointer-events: none; /* Allows click-through across transparent desktop areas */
+}
+
+/* Anchored seamlessly to the top-right frame corner */
+.vine-container {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  width: 180px;
+  height: 350px;
+  pointer-events: auto; /* Enables dragging and hover states */
+  cursor: grab;
+  transform-origin: top center;
+  animation: realisticBreeze 8s ease-in-out infinite;
+}
+
+.vine-container:active {
+  cursor: grabbing;
+}
+
+/* Photorealistic Depth & Drop Shadow to mimic a real item hanging off screen bezels */
+.realistic-vine-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(6px 14px 10px rgba(0, 0, 0, 0.45));
+}
+
+/* Natural Organic Wind Simulation */
+@keyframes realisticBreeze {
+  0% { transform: rotate(0deg) skewX(0deg); }
+  25% { transform: rotate(0.8deg) skewX(0.3deg); }
+  50% { transform: rotate(0deg) skewX(0deg); }
+  75% { transform: rotate(-0.7deg) skewX(-0.2deg); }
+  100% { transform: rotate(0deg) skewX(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vine-container {
+    animation: none;
+  }
+}

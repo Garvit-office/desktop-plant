@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+ @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root { font-family: 'Manrope', sans-serif; color: #18352a; background: #f0f4f1; font-synthesis: none; }
 * { box-sizing: border-box; }
@@ -52,3 +52,59 @@ h1 em { color: #83a894; font-style: normal; }
 @keyframes floatPlant { 0%, 100% { transform: translateY(2px) rotate(-1deg); } 50% { transform: translateY(-5px) rotate(1deg); } }
 @media (max-width: 760px) { .marketplace-shell { padding: 0 20px 24px; }.site-header { padding-top: 20px; }.availability { font-size: 0; }.availability .status-dot { margin-right: 5px; }.hero { grid-template-columns: 1fr; gap: 35px; min-height: 0; padding: 48px 0 67px; }.hero-window { height: 250px; box-shadow: 10px 13px 0 #dbe7df; }.plant-grid { grid-template-columns: 1fr; max-width: 440px; }.section-heading { align-items: start; gap: 12px; }.catalog-count { padding-top: 10px; font-size: 8px; text-align: right; }.site-footer { gap: 20px; flex-direction: column; padding-top: 38px; }.top-rule { margin: 0 -25px; } }
 @media (prefers-reduced-motion: reduce) { .plant-art { animation: none; }.plant-card { transition: none; } }
+.card-photographic-vine {
+  width: 90px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0px 8px 10px rgba(0, 0, 0, 0.25));
+  animation: floatPlant 5s ease-in-out infinite;
+}
+
+.hero-photographic-preview {
+  position: absolute;
+  right: -10px;
+  top: -20px;
+  width: 140px;
+  height: auto;
+  opacity: 0.85;
+  transform: rotate(15deg);
+  filter: drop-shadow(4px 12px 10px rgba(0, 0, 0, 0.3));
+  pointer-events: none;
+}
+
+html:has(.companion-app), body:has(.companion-app), body:has(.companion-app) #root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: transparent;
+}
+
+.companion-app {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.companion-vine {
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  width: 280px;
+  height: auto;
+  transform-origin: top right;
+  pointer-events: none;
+  filter: drop-shadow(5px 12px 8px rgba(0, 0, 0, .32));
+  animation: companionBreeze 8s ease-in-out infinite;
+}
+
+@keyframes companionBreeze {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-.8deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .companion-vine { animation: none; }
+}

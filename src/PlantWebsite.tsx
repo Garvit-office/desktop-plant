@@ -1,4 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react';
+import flowerImg from './assets/flower.png'; // Your photographic flower vine asset
 
 type PlantType = 'vine' | 'blossom' | 'sunflower';
 
@@ -26,8 +27,8 @@ const plantsCatalog: Plant[] = [
   },
   {
     id: 'sakura-blossom',
-    name: 'Sakura Cherry Blossom',
-    description: 'Delicate pink blossoms with a slow, calming sway for focused afternoons.',
+    name: 'Coral Rose Vine',
+    description: 'Delicate climbing roses with a slow, calming sway for focused afternoons.',
     downloads: 980,
     type: 'blossom',
     installerUrl: 'https://github.com/Garvit-office/desktop-plant/releases/download/v1.0.0/sakura_setup.exe',
@@ -49,15 +50,12 @@ const plantsCatalog: Plant[] = [
 const apiBase = import.meta.env.VITE_API_URL || '';
 
 function PlantArtwork({ type }: { type: PlantType }) {
-  return <div className={`plant-art plant-art--${type}`} aria-hidden="true">
-    <span className="art-pot" />
-    <span className="art-stem art-stem--one" />
-    <span className="art-stem art-stem--two" />
-    <span className="art-leaf art-leaf--one" />
-    <span className="art-leaf art-leaf--two" />
-    <span className="art-leaf art-leaf--three" />
-    <span className="art-flower">{type === 'blossom' ? '✿' : type === 'sunflower' ? '✺' : '✦'}</span>
-  </div>;
+  return (
+    <div className={`plant-art plant-art--${type}`} aria-hidden="true">
+      {/* Uses your actual photographic flower vine image instead of abstract shapes */}
+      <img src={flowerImg} alt="Botanical Vine" className="card-photographic-vine" />
+    </div>
+  );
 }
 
 export default function PlantWebsite() {
@@ -118,7 +116,10 @@ export default function PlantWebsite() {
         </div>
         <div className="hero-window" aria-hidden="true">
           <div className="window-bar"><span /><span /><span /><b>desktop / greenery</b></div>
-          <div className="window-scene"><div className="hero-vine" /><div className="hero-window-copy">make space<br /><i>for something<br />growing.</i></div></div>
+          <div className="window-scene">
+            <img src={flowerImg} alt="Hero Vine Preview" className="hero-photographic-preview" />
+            <div className="hero-window-copy">make space<br /><i>for something<br />growing.</i></div>
+          </div>
         </div>
       </section>
 
@@ -128,10 +129,19 @@ export default function PlantWebsite() {
         {plants.map((plant) => (
           <article className="plant-card" key={plant.id}>
             <div className="card-art" style={{ '--plant-accent': plant.color } as CSSProperties}>
-              <span className="card-tag">{plant.tag}</span><PlantArtwork type={plant.type} />
+              <span className="card-tag">{plant.tag}</span>
+              <PlantArtwork type={plant.type} />
             </div>
-            <div className="card-content"><p className="plant-kind">{plant.type === 'vine' ? 'Trailing plant' : plant.type === 'blossom' ? 'Flowering branch' : 'Flowering plant'}</p><h3>{plant.name}</h3><p className="plant-description">{plant.description}</p>
-              <div className="card-footer"><span className="adoptions">↓ {plant.downloads.toLocaleString()} <small>adoptions</small></span><button onClick={() => void handleDownload(plant.id, plant.installerUrl)} disabled={downloadingId === plant.id}>{downloadingId === plant.id ? 'Downloading...' : 'Adopt plant <'}</button></div>
+            <div className="card-content">
+              <p className="plant-kind">{plant.type === 'vine' ? 'Trailing plant' : plant.type === 'blossom' ? 'Flowering branch' : 'Flowering plant'}</p>
+              <h3>{plant.name}</h3>
+              <p className="plant-description">{plant.description}</p>
+              <div className="card-footer">
+                <span className="adoptions">↓ {plant.downloads.toLocaleString()} <small>adoptions</small></span>
+                <button onClick={() => void handleDownload(plant.id, plant.installerUrl)} disabled={downloadingId === plant.id}>
+                  {downloadingId === plant.id ? 'Downloading...' : 'Adopt plant ↙'}
+                </button>
+              </div>
             </div>
           </article>
         ))}
